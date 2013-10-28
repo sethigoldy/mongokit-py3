@@ -1,4 +1,4 @@
-## MongoKit-Py3
+## MongoKit-Py3 [![Build Status](https://travis-ci.org/aquavitae/mongokit-py3.png?branch=master)](https://travis-ci.org/aquavitae/mongokit-py3)
 
 This is a fork of [MongoKit](https://github.com/namlook/mongokit) for Python 3. The readme below is taken directly from 
 that project, and all the documentation can be view there, with the following differences:
