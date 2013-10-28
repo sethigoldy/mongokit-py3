@@ -28,7 +28,7 @@
 __version__ = "0.9.0"
 
 from bson.dbref import DBRef
-from cursor import Cursor
+from .cursor import Cursor
 from .operators import *
 from .schema_document import *
 from .mongo_exceptions import *
