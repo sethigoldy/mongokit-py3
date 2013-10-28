@@ -31,6 +31,8 @@ from mongokit import *
 from bson.objectid import ObjectId
 from mongokit.helpers import i18nDotedDict
 
+import six
+
 
 class i18nTestCase(unittest.TestCase):
     def setUp(self):
@@ -44,7 +46,7 @@ class i18nTestCase(unittest.TestCase):
     def test_simple_i18n(self):
         class Doc(Document):
             structure = {
-                'title':unicode,
+                'title':six.text_type,
             }
             i18n = ['title']
         self.connection.register([Doc])
@@ -103,7 +105,7 @@ class i18nTestCase(unittest.TestCase):
         class Doc(Document):
             use_dot_notation = True
             structure = {
-                "title":[unicode]
+                "title":[six.text_type]
             }
             i18n = ['title']
         self.connection.register([Doc])
@@ -124,7 +126,7 @@ class i18nTestCase(unittest.TestCase):
         class Doc(Document):
             structure = {
                 'title':{
-                    'foo':unicode,
+                    'foo':six.text_type,
                     'bar':{'bla':int},
                     'egg':int,
                 }
@@ -141,10 +143,15 @@ class i18nTestCase(unittest.TestCase):
         doc.save()
 
         raw_doc = self.col.find_one({'_id':doc['_id']})
-        assert raw_doc == {'_id':doc['_id'],
-          u'title': {u'foo': [{u'lang': u'fr', u'value': u'Salut'}, {u'lang': u'en', u'value': u'Hello'}],
-          u'bar': {u'bla': [{u'lang': u'fr', u'value': 3}, {u'lang': u'en', u'value': 2}]}, 'egg':4}
-        }, raw_doc
+        # The i18n data is stored in a list, parsed from the dict in 'foo'.
+        # Since python does not guarantee an order to dict, the list might
+        # change order, so it is sorted for testing
+        raw_doc[u'title'][u'foo'].sort(key=lambda i: i[u'lang'])
+        raw_doc[u'title'][u'bar'][u'bla'].sort(key=lambda i: i[u'lang'])
+        self.assertEqual(raw_doc, {'_id':doc['_id'],
+          u'title': {u'foo': [{u'lang': u'en', u'value': u'Hello'}, {u'lang': u'fr', u'value': u'Salut'}],
+          u'bar': {u'bla': [{u'lang': u'en', u'value': 2}, {u'lang': u'fr', u'value': 3}]}, 'egg':4}
+        })
         fetched_doc = self.col.Doc.find_one({'_id':doc['_id']})
         assert fetched_doc['title']['foo']['en'] == 'Hello'
         assert fetched_doc['title']['foo']['fr'] == 'Salut'
@@ -155,7 +162,7 @@ class i18nTestCase(unittest.TestCase):
             structure = {
                 'toto':{'titi':{'tata':int}},
                 'title':{
-                    'foo':unicode,
+                    'foo':six.text_type,
                     'bar':{'bla':int},
                     'egg':int,
                 }
@@ -196,16 +203,18 @@ class i18nTestCase(unittest.TestCase):
         doc.save()
 
         raw_doc = self.col.find_one({'_id':doc['_id']})
+        raw_doc[u'title'][u'foo'].sort(key=lambda i: i[u'lang'])
+        raw_doc[u'title'][u'bar'][u'bla'].sort(key=lambda i: i[u'lang'])
         self.assertEqual(raw_doc, {'_id':doc['_id'],
           u'toto': {u'titi': {u'tata': None}},
           u'title': {
               u'foo':[
-                  {u'lang': u'fr', u'value': u'Salut'},
-                  {u'lang': u'en', u'value': u'Hello'}
+                  {u'lang': u'en', u'value': u'Hello'},
+                  {u'lang': u'fr', u'value': u'Salut'}
                 ],
               u'bar': {u'bla': [
-                  {u'lang': u'fr', u'value': 3},
-                  {u'lang': u'en', u'value': 2}
+                  {u'lang': u'en', u'value': 2},
+                  {u'lang': u'fr', u'value': 3}
                 ]},
               'egg':4}
         })
@@ -224,7 +233,7 @@ class i18nTestCase(unittest.TestCase):
             use_dot_notation = True
             structure = {
                 'title':{
-                    'foo':unicode,
+                    'foo':six.text_type,
                 },
                 'bar':int,
             }
@@ -247,7 +256,7 @@ class i18nTestCase(unittest.TestCase):
     def test_i18n_bad_type(self):
         class Doc(Document):
             structure = {
-                'title':unicode,
+                'title':six.text_type,
             }
             i18n = ['title']
         self.connection.register([Doc])
@@ -261,10 +270,10 @@ class i18nTestCase(unittest.TestCase):
         try:
             class Doc(Document):
                 structure = {
-                    'title':unicode,
+                    'title':six.text_type,
                 }
                 i18n = ['title', 'bla']
-        except ValueError, e:
+        except ValueError as e:
             self.assertEqual(str(e), "Error in i18n: can't find bla in structure")
             failed = True
         self.assertEqual(failed, True)
@@ -272,7 +281,7 @@ class i18nTestCase(unittest.TestCase):
         class Doc(Document):
             use_dot_notation = True
             structure = {
-                'title':unicode,
+                'title':six.text_type,
             }
             i18n = ['title']
         self.connection.register([Doc])
@@ -291,7 +300,7 @@ class i18nTestCase(unittest.TestCase):
         class A(Document):
             structure = {
                 'a':{
-                    'title':unicode,
+                    'title':six.text_type,
                 }
             }
             i18n = ['a.title']
@@ -299,7 +308,7 @@ class i18nTestCase(unittest.TestCase):
         class B(A):
             structure = {
                 'b':{
-                    'title':unicode,
+                    'title':six.text_type,
                 }
             }
             i18n = ['b.title']
@@ -308,7 +317,7 @@ class i18nTestCase(unittest.TestCase):
         class C(Document):
             structure = {
                 'c':{
-                    'title':unicode,
+                    'title':six.text_type,
                 }
             }
             i18n = ['c.title']
@@ -316,13 +325,13 @@ class i18nTestCase(unittest.TestCase):
         class D(B, C):
             structure = {
                 'd':{
-                    'title':unicode,
+                    'title':six.text_type,
                 }
             }
 
         self.connection.register([D])
         doc = self.col.D()
-        assert doc.i18n == ['a.title', 'c.title', 'b.title'], doc.i18n
+        assert set(doc.i18n) == set(['a.title', 'c.title', 'b.title']), doc.i18n
         doc['a']['title']['en'] = u'Hello'
         doc['b']['title']['fr'] = u"Salut"
         doc['c']['title']['fr'] = u"Salut"
@@ -333,7 +342,7 @@ class i18nTestCase(unittest.TestCase):
             use_dot_notation = True
             structure = {
                 'title':int,
-                'foo':{'bar':unicode},
+                'foo':{'bar':six.text_type},
             }
             i18n = ['title', 'foo.bar']
             default_values = {'title':{'en':3, 'fr':4}, 'foo.bar': {'en':u'bla', 'fr': u'ble'}}
@@ -346,9 +355,9 @@ class i18nTestCase(unittest.TestCase):
         class MyDoc(Document):
             structure = {
                 "foo":{
-                    "bar": unicode,
+                    "bar": six.text_type,
                     "bla":{
-                        unicode:[unicode],
+                        six.text_type:[six.text_type],
                     },
                 },
             }
