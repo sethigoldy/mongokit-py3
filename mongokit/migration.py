@@ -30,8 +30,6 @@ from __future__ import print_function
 from .helpers import DotCollapsedDict
 from .mongo_exceptions import *
 
-import six
-
 
 class DocumentMigration(object):
 
@@ -51,7 +49,7 @@ class DocumentMigration(object):
 
     def validate_update(self, update_query):
         structure = DotCollapsedDict(self.doc_class.structure)
-        for op, fields in six.iteritems(update_query):
+        for op, fields in update_query.items():
             for field in fields:
                 if op != '$unset' and op != '$rename':
                     if field not in structure:

@@ -54,7 +54,6 @@ STRUCTURE_KEYWORDS += ['_id', '_ns', '_revision', '_version']
 
 log = logging.getLogger(__name__)
 
-from six import text_type as unicode, with_metaclass, string_types
 
 class DocumentProperties(SchemaProperties):
     def __new__(cls, name, bases, attrs):
@@ -85,7 +84,7 @@ class DocumentProperties(SchemaProperties):
                             "'fields' key must be specify in indexes")
                     for key, value in six.iteritems(index):
                         if key == "fields":
-                            if isinstance(value, string_types):
+                            if isinstance(value, str):
                                 if value not in attrs['_namespaces'] and value not in STRUCTURE_KEYWORDS:
                                     raise ValueError(
                                         "Error in indexes: can't find %s in structure" % value)
@@ -94,11 +93,11 @@ class DocumentProperties(SchemaProperties):
                                     raise BadIndexError(
                                         "Error in indexes: a tuple must contain "
                                         "only two value : the field name and the direction")
-                                if not (isinstance(value[1], int) or isinstance(value[1], string_types)):
+                                if not (isinstance(value[1], int) or isinstance(value[1], str)):
                                     raise BadIndexError(
                                         "Error in %s, the direction must be int or string "
                                         "(got %s instead)" % (value[0], type(value[1])))
-                                if not isinstance(value[0], string_types):
+                                if not isinstance(value[0], str):
                                     raise BadIndexError(
                                         "Error in %s, the field name must be string "
                                         "(got %s instead)" % (value[0], type(value[0])))
@@ -136,7 +135,7 @@ class DocumentProperties(SchemaProperties):
                             assert isinstance(value, int)
 
 
-class Document(with_metaclass(DocumentProperties, SchemaDocument)):
+class Document(SchemaDocument, metaclass=DocumentProperties):
 
     type_field = '_type'
 
@@ -452,12 +451,12 @@ class Document(with_metaclass(DocumentProperties, SchemaDocument)):
 
             if isinstance(given_fields, tuple):
                 fields = [given_fields]
-            elif isinstance(given_fields, string_types):
+            elif isinstance(given_fields, str):
                 fields = [(given_fields, 1)]
             else:
                 fields = []
                 for field in given_fields:
-                    if isinstance(field, string_types):
+                    if isinstance(field, str):
                         field = (field, 1)
                     fields.append(field)
             log.debug('Creating index for %s' % str(given_fields))
