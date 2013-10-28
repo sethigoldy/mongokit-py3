@@ -48,7 +48,7 @@ class SchemaLessTestCase(unittest.TestCase):
         class MyDoc(Document):
             use_schemaless = True
             structure = {
-                'foo': six.text_type,
+                'foo': str,
                 'bar': int,
             }
 
@@ -56,7 +56,7 @@ class SchemaLessTestCase(unittest.TestCase):
         self.assertEqual('foo' in doc, True)
         self.assertEqual('bar' in doc, True)
         self.assertEqual('egg' in doc, False)
-        doc['foo'] = u'bla'
+        doc['foo'] = 'bla'
         doc['bar'] = 3
         doc['egg'] = 9
         doc.save()
@@ -78,7 +78,7 @@ class SchemaLessTestCase(unittest.TestCase):
         doc = self.col.MyDoc.find_one()
         self.assertEqual(set(doc.keys()), set(['_id', 'egg']))
 
-        doc = self.col.MyDoc({'_id':1, 'foo':u'bla'})
+        doc = self.col.MyDoc({'_id':1, 'foo':'bla'})
         doc.save()
         
 
@@ -87,7 +87,7 @@ class SchemaLessTestCase(unittest.TestCase):
         class MyDoc(Document):
             use_schemaless = True
             structure = {
-                'foo': six.text_type,
+                'foo': str,
                 'bar': int,
             }
             required_fields = ['foo']
@@ -96,7 +96,7 @@ class SchemaLessTestCase(unittest.TestCase):
         self.assertEqual('foo' in doc, True)
         self.assertEqual('bar' in doc, True)
         self.assertEqual('egg' in doc, False)
-        doc['foo'] = u'bla'
+        doc['foo'] = 'bla'
         doc['bar'] = 3
         doc['egg'] = 9
         doc.save()
@@ -117,7 +117,7 @@ class SchemaLessTestCase(unittest.TestCase):
         self.assertEqual('egg' in doc, True)
         doc['bar'] = 2
         self.assertRaises(RequireFieldError, doc.save)
-        doc['foo'] = u'arf'
+        doc['foo'] = 'arf'
         doc.save()
 
     def test_schemaless_no_structure(self):
@@ -128,8 +128,8 @@ class SchemaLessTestCase(unittest.TestCase):
         doc = self.col.MyDoc()
         self.assertEqual('foo' in doc, False)
         self.assertEqual('bar' in doc, False)
-        doc['_id'] = u'foo'
-        doc['foo'] = u'bla'
+        doc['_id'] = 'foo'
+        doc['foo'] = 'bla'
         doc['bar'] = 3
         doc.save()
         
@@ -149,16 +149,16 @@ class SchemaLessTestCase(unittest.TestCase):
             __database__ = 'test'
             use_schemaless = True
             structure = {
-                'name': six.text_type,
-                'password': six.text_type,
-                'last_name': six.text_type,
-                'first_name': six.text_type,
-                'email': six.text_type,
+                'name': str,
+                'password': str,
+                'last_name': str,
+                'first_name': str,
+                'email': str,
                 'last_login': datetime.datetime,
             }
             use_dot_notation = True
 
-        self.connection.User.collection.save({'name': u'namlook', 'password': u'test', 'email': u'n@c.com'})
+        self.connection.User.collection.save({'name': 'namlook', 'password': 'test', 'email': 'n@c.com'})
 
         found_attribute = self.connection.User.find_one({'name':'namlook'})
         found_attribute.last_login = datetime.datetime.utcnow()

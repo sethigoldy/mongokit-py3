@@ -47,11 +47,11 @@ class CustomTypesTestCase(unittest.TestCase):
         import datetime
 
         class CustomDate(CustomType):
-            mongo_type = six.text_type
+            mongo_type = str
             python_type = datetime.datetime
             def to_bson(self, value):
                 """convert type to a mongodb type"""
-                return six.text_type(datetime.datetime.strftime(value,'%y-%m-%d'))
+                return str(datetime.datetime.strftime(value,'%y-%m-%d'))
             def to_python(self, value):
                 """convert type to a python object"""
                 if value is not None:
@@ -69,7 +69,7 @@ class CustomTypesTestCase(unittest.TestCase):
         foo['date'] = datetime.datetime(2003,2,1)
         foo.save()
         saved_foo =  foo.collection.find({'_id':1}).next()
-        assert saved_foo == {u'date': u'03-02-01', u'_id': 1}
+        assert saved_foo == {'date': '03-02-01', '_id': 1}
         foo.save()
 
         foo2 = self.col.Foo()
@@ -107,7 +107,7 @@ class CustomTypesTestCase(unittest.TestCase):
         r['price'] =  '9.99'
         r.save()
         r_saved = r.collection.find_one({'_id':'bla'})
-        assert r_saved == {u'_id': u'bla', u'price': 9.9900000000000002}
+        assert r_saved == {'_id': 'bla', 'price': 9.9900000000000002}
 
 
     def test_instance_type(self):
@@ -127,11 +127,11 @@ class CustomTypesTestCase(unittest.TestCase):
     def test_custom_type_nested(self):
         import datetime
         class CustomDate(CustomType):
-            mongo_type = six.text_type
+            mongo_type = str
             python_type = datetime.datetime
             def to_bson(self, value):
                 """convert type to a mongodb type"""
-                return six.text_type(datetime.datetime.strftime(value,'%y-%m-%d'))
+                return str(datetime.datetime.strftime(value,'%y-%m-%d'))
             def to_python(self, value):
                 """convert type to a python object"""
                 if value is not None:
@@ -164,11 +164,11 @@ class CustomTypesTestCase(unittest.TestCase):
     def test_custom_type_nested_in_list(self):
         import datetime
         class CustomDate(CustomType):
-            mongo_type = six.text_type
+            mongo_type = str
             python_type = datetime.datetime
             def to_bson(self, value):
                 """convert type to a mongodb type"""
-                return six.text_type(datetime.datetime.strftime(value,'%y-%m-%d'))
+                return str(datetime.datetime.strftime(value,'%y-%m-%d'))
             def to_python(self, value):
                 """convert type to a python object"""
                 if value is not None:
@@ -200,9 +200,9 @@ class CustomTypesTestCase(unittest.TestCase):
 
         assert foo == {'foo': {'date': [datetime.datetime(2008, 6, 7, 0, 0), datetime.datetime(2003, 2, 1, 0, 0)]}, '_id': 1}
         foo = self.col.Foo.get_from_id(1)
-        assert foo == {u'_id': 1, u'foo': {u'date': [datetime.datetime(2008, 6, 7, 0, 0), datetime.datetime(2003, 2, 1, 0, 0)]}}
+        assert foo == {'_id': 1, 'foo': {'date': [datetime.datetime(2008, 6, 7, 0, 0), datetime.datetime(2003, 2, 1, 0, 0)]}}
         saved_foo =  foo.collection.find({'_id':1}).next()
-        assert saved_foo == {u'_id': 1, u'foo': {u'date': [u'08-06-07', u'03-02-01']}}
+        assert saved_foo == {'_id': 1, 'foo': {'date': ['08-06-07', '03-02-01']}}
         foo2 = self.col.Foo.get_from_id(2)
         assert foo2['foo']['date'] == [datetime.datetime(2008,6,7)], foo2
 
@@ -211,7 +211,7 @@ class CustomTypesTestCase(unittest.TestCase):
         class CustomDate(CustomType):
             def to_bson(self, value):
                 """convert type to a mongodb type"""
-                return six.text_type(datetime.datetime.strftime(value,'%y-%m-%d'))
+                return str(datetime.datetime.strftime(value,'%y-%m-%d'))
             def to_python(self, value):
                 """convert type to a python object"""
                 if value is not None:
@@ -219,11 +219,11 @@ class CustomTypesTestCase(unittest.TestCase):
         self.assertRaises(TypeError, CustomDate)
 
         class CustomDate(CustomType):
-            mongo_type = six.text_type
+            mongo_type = str
         self.assertRaises(TypeError, CustomDate)
 
         class CustomDate(CustomType):
-            mongo_type = six.text_type
+            mongo_type = str
             python_type = int
         self.assertRaises(NotImplementedError, CustomDate().to_bson, "bla")
         self.assertRaises(NotImplementedError, CustomDate().to_python, "bla")
@@ -232,11 +232,11 @@ class CustomTypesTestCase(unittest.TestCase):
         import datetime
 
         class CustomDate(CustomType):
-            mongo_type = six.text_type
+            mongo_type = str
             python_type = string_type
             def to_bson(self, value):
                 """convert type to a mongodb type"""
-                return six.text_type(datetime.datetime.strftime(value,'%y-%m-%d'))
+                return str(datetime.datetime.strftime(value,'%y-%m-%d'))
             def to_python(self, value):
                 """convert type to a python object"""
                 if value is not None:
@@ -260,11 +260,11 @@ class CustomTypesTestCase(unittest.TestCase):
         import datetime
 
         class CustomDate(CustomType):
-            mongo_type = six.text_type
+            mongo_type = str
             python_type = str
             def to_bson(self, value):
                 """convert type to a mongodb type"""
-                return six.text_type(datetime.datetime.strftime(value,'%y-%m-%d'))
+                return str(datetime.datetime.strftime(value,'%y-%m-%d'))
             def to_python(self, value):
                 """convert type to a python object"""
                 if value is not None:
@@ -285,11 +285,11 @@ class CustomTypesTestCase(unittest.TestCase):
               'date must be an instance of str not datetime')
 
         class CustomDate(CustomType):
-            mongo_type = six.text_type
+            mongo_type = str
             python_type = datetime.datetime
             def to_bson(self, value):
                 """convert type to a mongodb type"""
-                return six.text_type(datetime.datetime.strftime(value,'%y-%m-%d'))
+                return str(datetime.datetime.strftime(value,'%y-%m-%d'))
             def to_python(self, value):
                 """convert type to a python object"""
                 if value is not None:
@@ -328,7 +328,7 @@ class CustomTypesTestCase(unittest.TestCase):
             python_type = datetime.datetime
             def to_bson(self, value):
                 """convert type to a mongodb type"""
-                return six.text_type(datetime.datetime.strftime(value,'%y-%m-%d'))
+                return str(datetime.datetime.strftime(value,'%y-%m-%d'))
             def to_python(self, value):
                 """convert type to a python object"""
                 if value is not None:
@@ -360,7 +360,7 @@ class CustomTypesTestCase(unittest.TestCase):
             structure = {
                 'products': [
                       {
-                        'sku': six.text_type,
+                        'sku': str,
                         'qty': int,
                         'price': CustomPrice(),
                       }
@@ -371,11 +371,11 @@ class CustomTypesTestCase(unittest.TestCase):
         r = self.connection.test.test.Receipt()
         r['_id'] = 'bla'
         r.products = []
-        r.products.append({ 'sku': u'X-25A5F58B-61', 'qty': 1, 'price': '9.99' })
-        r.products.append({ 'sku': u'Z-25A5F58B-62', 'qty': 2, 'price': '2.99' })
+        r.products.append({ 'sku': 'X-25A5F58B-61', 'qty': 1, 'price': '9.99' })
+        r.products.append({ 'sku': 'Z-25A5F58B-62', 'qty': 2, 'price': '2.99' })
         r.save()
         r_saved = r.collection.find_one({'_id':'bla'})
-        assert r_saved == {u'_id': u'bla', u'products': [{u'sku': u'X-25A5F58B-61', u'price': 9.9900000000000002, u'qty': 1}, {u'sku': u'Z-25A5F58B-62', u'price': 2.9900000000000002, u'qty': 2}]}
+        assert r_saved == {'_id': 'bla', 'products': [{'sku': 'X-25A5F58B-61', 'price': 9.9900000000000002, 'qty': 1}, {'sku': 'Z-25A5F58B-62', 'price': 2.9900000000000002, 'qty': 2}]}
 
     def test_custom_type_list(self):
         import datetime
@@ -404,18 +404,18 @@ class CustomTypesTestCase(unittest.TestCase):
         r['bar']['spam'] = '3.33'
         r.save()
         r_saved = r.collection.find_one({'_id':'bla'})
-        assert r_saved == {u'price': [9.9900000000000002, 2.9900000000000002], u'_id': u'bla', u'bar': {u'spam': 3.3300000000000001}, u'foo': 2.23}
+        assert r_saved == {'price': [9.9900000000000002, 2.9900000000000002], '_id': 'bla', 'bar': {'spam': 3.3300000000000001}, 'foo': 2.23}
 
     def test_custom_type_not_serializable(self):
         from decimal import Decimal
         class DecimalType(CustomType):
-           mongo_type = six.text_type
+           mongo_type = str
            python_type = Decimal
 
            def to_bson(self, value):
                """convert type to a mongodb type"""
                if value is not None:
-                   return six.text_type(value)
+                   return str(value)
 
            def to_python(self, value):
                """convert type to a python object"""
@@ -426,7 +426,7 @@ class CustomTypesTestCase(unittest.TestCase):
            structure = {'amount': DecimalType()}
         self.connection.register([MyDocument])
         document = self.col.MyDocument()
-        document['amount'] = Decimal(u'100.00')
+        document['amount'] = Decimal('100.00')
         document.validate()
 
     def test_required_custom_type_mongotype_dict(self):
@@ -434,7 +434,7 @@ class CustomTypesTestCase(unittest.TestCase):
             mongo_type = dict
             python_type = float
             def to_bson(self, value):
-                return {'f':six.text_type(value)}
+                return {'f':str(value)}
             def to_python(self, value):
                 return float(value['f'])
 
@@ -447,20 +447,20 @@ class CustomTypesTestCase(unittest.TestCase):
         self.connection.register([MyDocument])
 
         document = self.col.MyDocument()
-        document['_id'] = u'test'
+        document['_id'] = 'test'
         document['amount'] = 1.00
         self.assertRaises(ValidationError, document.validate)
         document['amount'] = 100.00
         document.save()
-        assert self.col.find_one() == {u'amount': {u'f': u'100.0'}, u'_id': u'test'}, self.col.find_one()
-        assert self.col.MyDocument.find_one() == {u'amount': 100.00, u'_id': u'test'}, self.col.MyDocument.find_one()
+        assert self.col.find_one() == {'amount': {'f': '100.0'}, '_id': 'test'}, self.col.find_one()
+        assert self.col.MyDocument.find_one() == {'amount': 100.00, '_id': 'test'}, self.col.MyDocument.find_one()
  
     def test_custom_type_mongotype_dict_index_not_checked(self):
         class CustomObject(CustomType):
             mongo_type = dict
             python_type = float
             def to_bson(self, value):
-                return {'f':six.text_type(value)}
+                return {'f':str(value)}
             def to_python(self, value):
                 return float(value['f'])
 
@@ -478,11 +478,11 @@ class CustomTypesTestCase(unittest.TestCase):
     def test_missing_custom_types(self):
         import datetime
         class CustomDate(CustomType):
-            mongo_type = six.text_type
+            mongo_type = str
             python_type = datetime.datetime
             def to_bson(self, value):
                 """convert type to a mongodb type"""
-                return six.text_type(datetime.datetime.strftime(value,'%y-%m-%d'))
+                return str(datetime.datetime.strftime(value,'%y-%m-%d'))
             def to_python(self, value):
                 """convert type to a python object"""
                 if value is not None:

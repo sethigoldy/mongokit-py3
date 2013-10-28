@@ -33,11 +33,11 @@ import six
 
 class User(Document):
     structure = {
-        "_id": six.text_type,
+        "_id": str,
         "user": {
-            "login": six.text_type,
-            "password": six.text_type,  # TODO validator
-            "email": six.text_type,
+            "login": str,
+            "password": str,  # TODO validator
+            "email": str,
         }
     }
     required_fields = ['user.password', 'user.email']  # what if openid ? password is None
@@ -58,7 +58,7 @@ class User(Document):
     def set_password(self, password):
         """ Hash password on the fly """
         password_salt = hashlib.sha1(os.urandom(60)).hexdigest()  # Always str
-        if isinstance(password, six.text_type):
+        if isinstance(password, str):
             password = password.encode('utf-8')
         if six.PY3:
             password_salt = password_salt.encode('utf-8')
@@ -66,7 +66,7 @@ class User(Document):
         if six.PY3:
             crypt = crypt.encode('utf-8')
         password_crypt = password_salt + crypt
-        password_crypt = six.text_type(password_crypt, 'utf-8')
+        password_crypt = str(password_crypt, 'utf-8')
         self['user']['password'] = password_crypt
 
     def get_password(self):
@@ -81,7 +81,7 @@ class User(Document):
     def verify_password(self, password):
         """ Check the password against existing credentials  """
         password_salt = self['user']['password'][:40]
-        if isinstance(password, six.text_type):
+        if isinstance(password, str):
             password = password.encode('utf-8')
         if six.PY3:
             password_salt = password_salt.encode('utf-8')

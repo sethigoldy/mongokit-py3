@@ -47,12 +47,12 @@ class GridFSTestCase(unittest.TestCase):
     def test_simple_gridfs(self):
         class Doc(Document):
             structure = {
-                'title':six.text_type,
+                'title':str,
             }
             gridfs = {'files': ['source']}
         self.connection.register([Doc])
         doc = self.col.Doc()
-        doc['title'] = u'Hello'
+        doc['title'] = 'Hello'
         doc.save()
 
         assertion = False
@@ -92,12 +92,12 @@ class GridFSTestCase(unittest.TestCase):
     def test_gridfs_without_saving(self):
         class Doc(Document):
             structure = {
-                'title':six.text_type,
+                'title':str,
             }
             gridfs = {'files': ['source']}
         self.connection.register([Doc])
         doc = self.col.Doc()
-        doc['title'] = u'Hello'
+        doc['title'] = 'Hello'
         assertion = False
         try:
             doc.fs.source = b"Hello World !"
@@ -110,12 +110,12 @@ class GridFSTestCase(unittest.TestCase):
     def test_gridfs_bad_type(self):
         class Doc(Document):
             structure = {
-                'title':six.text_type,
+                'title':str,
             }
             gridfs = {'files': ['source']}
         self.connection.register([Doc])
         doc = self.col.Doc()
-        doc['title'] = u'Hello'
+        doc['title'] = 'Hello'
         doc.save()
         assertion = False
         try:
@@ -125,7 +125,7 @@ class GridFSTestCase(unittest.TestCase):
         assert assertion
         assertion = False
         try:
-            doc.fs.source = u"Hello World !"
+            doc.fs.source = "Hello World !"
         except TypeError:
             assertion = True
         assert assertion
@@ -133,7 +133,7 @@ class GridFSTestCase(unittest.TestCase):
     def test_gridfs_with_container(self):
         class Doc(Document):
             structure = {
-                'title':six.text_type,
+                'title':str,
             }
             gridfs = {
                 'files': ['source'],
@@ -142,7 +142,7 @@ class GridFSTestCase(unittest.TestCase):
 
         self.connection.register([Doc])
         doc = self.col.Doc()
-        doc['title'] = u'Hello'
+        doc['title'] = 'Hello'
         doc.save()
 
         doc.fs.source = b"Hello World !"
@@ -176,12 +176,12 @@ class GridFSTestCase(unittest.TestCase):
     def test_gridfs_list(self):
         class Doc(Document):
             structure = {
-                'title':six.text_type,
+                'title':str,
             }
             gridfs = {'files': ['foo', 'bla'], 'containers':['attachments']}
         self.connection.register([Doc])
         doc = self.col.Doc()
-        doc['title'] = u'Hello'
+        doc['title'] = 'Hello'
         doc.save()
 
         doc.fs.foo = b"Hello World !"
@@ -190,18 +190,18 @@ class GridFSTestCase(unittest.TestCase):
         doc.fs.attachments['eggs.txt'] = b"Ola !"
         doc.fs.attachments['spam.txt'] = b"Saluton !"
         assert [(i.container, i.name) for i in doc.fs.attachments] == [('attachments', 'eggs.txt'), ('attachments', 'spam.txt')], [(i.container, i.name) for i in doc.fs.attachments]
-        assert [i.name for i in doc.fs] == [u'foo', u'bla', u'eggs.txt', u'spam.txt'], [(i.container, i.name) for i in doc.fs]
+        assert [i.name for i in doc.fs] == ['foo', 'bla', 'eggs.txt', 'spam.txt'], [(i.container, i.name) for i in doc.fs]
 
 
     def test_gridfs_new_file(self):
         class Doc(Document):
             structure = {
-                'title':six.text_type,
+                'title':str,
             }
             gridfs = {'files': ['foo', 'bla'], 'containers':['attachments']}
         self.connection.register([Doc])
         doc = self.col.Doc()
-        doc['title'] = u'Hello'
+        doc['title'] = 'Hello'
         doc.save()
 
         doc.fs.foo = b"Hello World !"
@@ -226,12 +226,12 @@ class GridFSTestCase(unittest.TestCase):
     def test_pymongo_compatibility(self):
         class Doc(Document):
             structure = {
-                'title':six.text_type,
+                'title':str,
             }
             gridfs = {'files': ['source', 'foo'], 'containers':['attachments']}
         self.connection.register([Doc])
         doc = self.col.Doc()
-        doc['title'] = u'Hello'
+        doc['title'] = 'Hello'
         doc.save()
         id = doc.fs.put(b"Hello World", filename="source")
         assert doc.fs.get(id).read() == b'Hello World'

@@ -71,14 +71,14 @@ class _ExtMongoDBAuthTestCase(unittest.TestCase):
             db_password = "bar"
             structure = {
                 "bla":{
-                    "foo":six.text_type,
+                    "foo":str,
                     "bar":int,
                 },
                 "spam":[],
             }
         self.connection.register([MyDoc])
         mydoc = self.connection.test.mongokit_auth.MyDoc()
-        mydoc["bla"]["foo"] = u"bar"
+        mydoc["bla"]["foo"] = "bar"
         mydoc["bla"]["bar"] = 42
         id = mydoc.save()
         assert isinstance(id['_id'], ObjectId)
@@ -88,7 +88,7 @@ class _ExtMongoDBAuthTestCase(unittest.TestCase):
             assert saved_doc[key] == value
 
         mydoc = self.connection.test.mongokit_auth.MyDoc()
-        mydoc["bla"]["foo"] = u"bar"
+        mydoc["bla"]["foo"] = "bar"
         mydoc["bla"]["bar"] = 43
         id = mydoc.save(uuid=False)
         assert isinstance(id['_id'], ObjectId)
@@ -108,13 +108,13 @@ class _ExtMongoDBAuthTestCase(unittest.TestCase):
             collection_name = "mongokit_auth"
             structure = {
                 "bla":{
-                    "foo":six.text_type,
+                    "foo":str,
                     "bar":int,
                 },
                 "spam":[],
             }
         mydoc = MyDoc()
-        mydoc["bla"]["foo"] = u"bar"
+        mydoc["bla"]["foo"] = "bar"
         mydoc["bla"]["bar"] = 42
         self.assertRaises(MongoAuthException, mydoc.save)
         self.db.logout()
@@ -127,7 +127,7 @@ class _ExtMongoDBAuthTestCase(unittest.TestCase):
                 db_password = "spam"
                 structure = {
                     "bla":{
-                        "foo":six.text_type,
+                        "foo":str,
                         "bar":int,
                     },
                     "spam":[],

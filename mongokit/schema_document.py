@@ -259,7 +259,7 @@ class SchemaDocument(six.with_metaclass(SchemaProperties, dict)):
 
     >>> class TestDoc(SchemaDocument):
     ...     structure = {
-    ...         "foo":six.text_type,
+    ...         "foo":str,
     ...         "bar":int,
     ...         "nested":{
     ...            "bla":float}}
@@ -660,7 +660,7 @@ class SchemaDocument(six.with_metaclass(SchemaProperties, dict)):
                             raise ValidationError("%s does not pass the validator " + validator.__name__)
                     except Exception as e:
                         self._raise_exception(ValidationError, key,
-                                              six.text_type(e) % key)
+                                              str(e) % key)
 
     def _process_custom_type(self, target, doc, struct, path="", root_path=""):
         for key in struct:
