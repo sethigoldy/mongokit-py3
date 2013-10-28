@@ -28,8 +28,6 @@
 from .document import Document
 from .mongo_exceptions import *
 
-import six
-
 
 class RevisionDocument(Document):
     structure = {

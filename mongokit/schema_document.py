@@ -30,8 +30,6 @@ import re
 import logging
 from copy import deepcopy
 
-import six
-
 log = logging.getLogger(__name__)
 
 from .operators import SchemaOperator, IS
@@ -104,19 +102,9 @@ _authorized_types = [
         dict,
         datetime.datetime,
         CustomType,
-    ]
-if six.PY3:
-    _authorized_types += [
         str,
         bytes,
     ]
-else:
-    _authorized_types += [
-        long,
-        unicode,
-        basestring,
-    ]
-    
     
 # field wich does not need to be declared into the structure
 STRUCTURE_KEYWORDS = []
@@ -251,7 +239,7 @@ class SchemaProperties(type):
                     raise ValueError("Error in i18n: can't find %s in structure" % i18n)
 
 
-class SchemaDocument(six.with_metaclass(SchemaProperties, dict)):
+class SchemaDocument(dict, metaclass=SchemaProperties):
     """
     A SchemaDocument is dictionary with a building structured schema
     The validate method will check that the document match the underling
@@ -359,7 +347,7 @@ class SchemaDocument(six.with_metaclass(SchemaProperties, dict)):
         self.validation_errors = {}
         # init
         if doc:
-            for k, v in six.iteritems(doc):
+            for k, v in doc.items():
                 self[k] = v
             gen_skel = False
         if gen_skel:
@@ -486,7 +474,7 @@ class SchemaDocument(six.with_metaclass(SchemaProperties, dict)):
                         raise StructureError("%s: %s is not an authorized type" % (name, struct))
             elif isinstance(struct, dict):
                 for key in struct:
-                    if isinstance(key, six.string_types):
+                    if isinstance(key, str):
                         if "." in key:
                             raise BadKeyError("%s: %s must not contain '.'" % (name, key))
                         if key.startswith('$'):
@@ -650,7 +638,7 @@ class SchemaDocument(six.with_metaclass(SchemaProperties, dict)):
     def _process_validators(self, doc, struct, path=""):
         doted_struct = DotCollapsedDict(self.structure)
         doted_doc = DotCollapsedDict(doc)
-        for key, validators in six.iteritems(self.validators):
+        for key, validators in self.validators.items():
             if key in doted_doc and doted_doc[key] is not None:
                 if not hasattr(validators, "__iter__"):
                     validators = [validators]
@@ -920,7 +908,7 @@ class i18n(dict, CustomType):
 
     def to_bson(self, value):
         if value is not None:
-            for l, v in six.iteritems(value):
+            for l, v in value.items():
                 if isinstance(v, list) and isinstance(self._field_type, list):
                     for i in v:
                         if not isinstance(i, self._field_type[0]):
@@ -930,7 +918,7 @@ class i18n(dict, CustomType):
                     if not isinstance(v, self._field_type):
                         raise SchemaTypeError("%s (%s) must be an instance of %s not %s" % (
                                               self._field_name, l, self._field_type, type(v).__name__))
-            return [{'lang': l, 'value': v} for l, v in six.iteritems(value)]
+            return [{'lang': l, 'value': v} for l, v in value.items()]
 
     def to_python(self, value):
         if value is not None:

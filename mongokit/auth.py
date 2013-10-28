@@ -29,7 +29,6 @@ from .document import Document
 import hashlib
 import os
 
-import six
 
 class User(Document):
     structure = {
@@ -60,11 +59,9 @@ class User(Document):
         password_salt = hashlib.sha1(os.urandom(60)).hexdigest()  # Always str
         if isinstance(password, str):
             password = password.encode('utf-8')
-        if six.PY3:
-            password_salt = password_salt.encode('utf-8')
+        password_salt = password_salt.encode('utf-8')
         crypt = hashlib.sha1(password + password_salt).hexdigest()
-        if six.PY3:
-            crypt = crypt.encode('utf-8')
+        crypt = crypt.encode('utf-8')
         password_crypt = password_salt + crypt
         password_crypt = str(password_crypt, 'utf-8')
         self['user']['password'] = password_crypt
@@ -83,8 +80,7 @@ class User(Document):
         password_salt = self['user']['password'][:40]
         if isinstance(password, str):
             password = password.encode('utf-8')
-        if six.PY3:
-            password_salt = password_salt.encode('utf-8')
+        password_salt = password_salt.encode('utf-8')
         crypt_pass = hashlib.sha1(password + password_salt).hexdigest()
         if crypt_pass == self['user']['password'][40:]:
             return True
