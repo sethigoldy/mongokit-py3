@@ -5,7 +5,7 @@ python:
   - 3.3
 
 before_install:
-    pip install --use-mirrors nose pymongo
+    pip install --use-mirrors six nose pymongo
 
 install:
   - python setup.py install
