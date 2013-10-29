@@ -37,14 +37,15 @@ import sys
 import codecs
 
 setup(
-    name = 'mongokit',
+    name='mongokit-py3',
     version = '0.9.0',  # TODO don't forget to change version in __init__
 
-    description = 'Python mongodb kit',
+    description='Python mongodb kit - Python 3 fork',
     long_description = codecs.open('README.md', "r", "utf-8").read(),
     author = 'Namlook',
+    maintainer='David Townshend',
     license = 'New BSD License',
-    url = 'http://namlook.github.com/mongokit/',
+    url='http://github.com/aquavitae/mongokit-py3/',
 
     classifiers = [
         'Development Status :: 5 - Production/Stable',
@@ -63,7 +64,6 @@ setup(
 
     install_requires = [
         'pymongo>=2.5',
-        'six>=1.4.1',
     ]
 
 )
