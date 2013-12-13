@@ -37,9 +37,8 @@ import sys
 import codecs
 
 setup(
-    name='mongokit-py3',
-    version='0.9.0',  # TODO don't forget to change version in __init__
-
+    name = 'mongokit-py3',
+    version = '0.9.1',  # TODO don't forget to change version in __init__
     description='Python mongodb kit - Python 3 fork',
     long_description = codecs.open('README.md', "r", "utf-8").read(),
     author = 'Namlook',
