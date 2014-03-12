@@ -568,25 +568,11 @@ class TypesTestCase(unittest.TestCase):
         @self.connection.register
         class MyDoc(Document):
             structure = {
-                'my_binary': basestring,
+                'my_binary': str,
             }
         obj = self.col.MyDoc()
         # non-utf8 string
-        non_utf8 = "\xFF\xFE\xFF";
-        obj['my_binary'] = non_utf8
-
-        self.assertRaises(bson.errors.InvalidStringData, obj.validate)
-
-    def test_binary_with_unicode_type(self):
-        import bson
-        @self.connection.register
-        class MyDoc(Document):
-            structure = {
-                'my_binary': unicode,
-            }
-        obj = self.col.MyDoc()
-        # non-utf8 string
-        non_utf8 = "\xFF\xFE\xFF";
+        non_utf8 = b"\xFF\xFE\xFF";
         obj['my_binary'] = non_utf8
 
         self.assertRaises(bson.errors.InvalidStringData, obj.validate)
@@ -600,7 +586,7 @@ class TypesTestCase(unittest.TestCase):
             }
         obj = self.col.MyDoc()
         # non-utf8 string
-        non_utf8 = "\xFF\xFE\xFF";
+        non_utf8 = b"\xFF\xFE\xFF";
         bin_obj = bson.binary.Binary(non_utf8)
         obj['my_binary'] = bin_obj
         obj.save()
