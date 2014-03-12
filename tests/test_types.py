@@ -39,7 +39,7 @@ class TypesTestCase(unittest.TestCase):
     def setUp(self):
         self.connection = Connection()
         self.col = self.connection['test']['mongokit']
-        
+
     def tearDown(self):
         self.connection.drop_database('test')
 
@@ -56,7 +56,7 @@ class TypesTestCase(unittest.TestCase):
                 assert MyDoc() == {"foo":[]}
             else:
                 assert MyDoc() == {"foo":None}, auth_type
- 
+
     def test_not_authorized_type(self):
         for unauth_type in [set]:
             failed = False
@@ -139,7 +139,7 @@ class TypesTestCase(unittest.TestCase):
 #        mydoc.validate()
 #        mydoc['foo'] = [set([1,2]), "bla"]
 #        self.assertRaises(AuthorizedTypeError, mydoc.validate)
-  
+
     def test_typed_list(self):
         class MyDoc(SchemaDocument):
             structure = {
@@ -283,7 +283,7 @@ class TypesTestCase(unittest.TestCase):
         mydict["foo"] = 3
         mydoc["foo"] = mydict
         mydoc.validate()
- 
+
     def test_custom_object_as_type(self):
         class MyDict(dict):
             pass
@@ -336,7 +336,7 @@ class TypesTestCase(unittest.TestCase):
         mydoc['bla']['blo']['bli'] = [{"arf":[1]}]
         self.assertRaises(SchemaTypeError, mydoc.validate)
 
-        
+
     def test_adding_custom_type(self):
         class MyDoc(SchemaDocument):
             structure = {
@@ -344,14 +344,14 @@ class TypesTestCase(unittest.TestCase):
             }
             authorized_types = SchemaDocument.authorized_types + [str]
         mydoc = MyDoc()
-    
+
     def test_schema_operator(self):
         from mongokit.operators import SchemaOperator
         class OP(SchemaOperator):
             repr = "op"
         op = OP()
         self.assertRaises(NotImplementedError, op.validate, "bla")
-            
+
 
     def test_or_operator(self):
         from mongokit import OR
@@ -535,7 +535,7 @@ class TypesTestCase(unittest.TestCase):
         assert isinstance(doc['category'], set)
         doc['title']='hello'
         doc.validate()
-        
+
     def test_int_type(self):
         @self.connection.register
         class MyDoc(Document):
@@ -562,3 +562,47 @@ class TypesTestCase(unittest.TestCase):
         obj.save()
 
         assert isinstance(self.col.MyDoc.find_one()['uuid'], uuid.UUID)
+
+    def test_binary_with_str_type(self):
+        import bson
+        @self.connection.register
+        class MyDoc(Document):
+            structure = {
+                'my_binary': basestring,
+            }
+        obj = self.col.MyDoc()
+        # non-utf8 string
+        non_utf8 = "\xFF\xFE\xFF";
+        obj['my_binary'] = non_utf8
+
+        self.assertRaises(bson.errors.InvalidStringData, obj.validate)
+
+    def test_binary_with_unicode_type(self):
+        import bson
+        @self.connection.register
+        class MyDoc(Document):
+            structure = {
+                'my_binary': unicode,
+            }
+        obj = self.col.MyDoc()
+        # non-utf8 string
+        non_utf8 = "\xFF\xFE\xFF";
+        obj['my_binary'] = non_utf8
+
+        self.assertRaises(bson.errors.InvalidStringData, obj.validate)
+
+    def test_binary_with_binary_type(self):
+        import bson
+        @self.connection.register
+        class MyDoc(Document):
+            structure = {
+                'my_binary': bson.binary.Binary,
+            }
+        obj = self.col.MyDoc()
+        # non-utf8 string
+        non_utf8 = "\xFF\xFE\xFF";
+        bin_obj = bson.binary.Binary(non_utf8)
+        obj['my_binary'] = bin_obj
+        obj.save()
+
+        self.assertEquals(self.col.MyDoc.find_one()['my_binary'], bin_obj)
