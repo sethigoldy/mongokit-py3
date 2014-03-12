@@ -574,6 +574,7 @@ class TypesTestCase(unittest.TestCase):
         # non-utf8 string
         non_utf8 = b"\xFF\xFE\xFF";
         obj['my_binary'] = non_utf8
+        obj.save()
 
         self.assertEquals(self.col.MyDoc.find_one()['my_binary'], non_utf8)
 
