@@ -388,7 +388,7 @@ class JsonTestCase(unittest.TestCase):
         mydoc.save()
         jsonstr= mydoc.to_json()
         assert json.loads(jsonstr) == json.loads('{"doc": {"embed": null}, "_id": "mydoc"}')
-        doc = self.col.MyDoc.from_json(json)
+        doc = self.col.MyDoc.from_json(jsonstr)
         assert doc == {'doc': {'embed': None}, '_id': 'mydoc'}
  
     def test_from_json_embeded_doc_in_list(self):
@@ -541,24 +541,6 @@ class JsonTestCase(unittest.TestCase):
         json2 = mydoc2.to_json()
  
         assert [i.to_json() for i in self.col.MyDoc.fetch()] == [jsonstr, json2]
- 
-    def test_anyjson_import_error(self):
-        import sys
-        newpathlist = sys.path
-        sys.path = []
-        class MyDoc(Document):
-            structure = {
-                "foo":int,
-            }
-        self.connection.register([MyDoc])
-        mydoc = self.col.MyDoc()
-        mydoc['_id'] = 'mydoc'
-        mydoc["foo"] = 4
-        mydoc.save()
-        self.assertRaises(ImportError, mydoc.to_json)
-        self.assertRaises(ImportError, self.col.MyDoc.from_json, '{"_id":"mydoc", "foo":4}')
-        sys.path = newpathlist
-        del newpathlist
  
     def test_to_json_with_dot_notation(self):
         class MyDoc(Document):
