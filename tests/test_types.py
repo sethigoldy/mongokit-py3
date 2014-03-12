@@ -563,6 +563,20 @@ class TypesTestCase(unittest.TestCase):
 
         assert isinstance(self.col.MyDoc.find_one()['uuid'], uuid.UUID)
 
+    def test_binary_with_bytes_type(self):
+        import bson
+        @self.connection.register
+        class MyDoc(Document):
+            structure = {
+                'my_binary': bytes,
+            }
+        obj = self.col.MyDoc()
+        # non-utf8 string
+        non_utf8 = b"\xFF\xFE\xFF";
+        obj['my_binary'] = non_utf8
+
+        self.assertEquals(self.col.MyDoc.find_one()['my_binary'], non_utf8)
+
     def test_binary_with_binary_type(self):
         import bson
         @self.connection.register
@@ -573,6 +587,7 @@ class TypesTestCase(unittest.TestCase):
         obj = self.col.MyDoc()
         # non-utf8 string
         non_utf8 = b"\xFF\xFE\xFF";
+        bin_obj = bson.binary.Binary(non_utf8)
         obj['my_binary'] = bin_obj
         obj.save()
 
