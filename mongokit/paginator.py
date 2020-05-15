@@ -109,7 +109,7 @@ class Paginator(object):
 
     @property
     def page_range(self):
-        return [p for p in xrange(1, self.num_pages+1)]
+        return [p for p in range(1, self.num_pages+1)]
 
     @property
     def num_pages(self):
